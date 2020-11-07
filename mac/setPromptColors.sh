@@ -1,4 +1,8 @@
-#!/user/local/bin/bash
+#!/usr/local/opt/bash
+
+# To use GNU bash commands, from [https://stackoverflow.com/questions/57972341/how-to-install-and-use-gnu-ls-on-macos]
+export PATH="/usr/local/opt/coreutils/libexec/gnubin:${PATH}"
+export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:${MANPATH}"
 
 export TERM=xterm-256color
 function EXT_COLOR () { echo -ne "\e[$1;38;5;$2m"; }     # REQUIRED FOR GETTING 256 COLORS IN PS1 PROMPT!!! KEEP!!!!
@@ -51,8 +55,7 @@ DEFAULT_COLOR="\e[0m"
 
 echo -e $PASS_COLOR"~"$ERROR_COLOR"*"$MAIN_COLOR$MESSAGE_1 $ACCENT_COLOR$MESSAGE_2$ERROR_COLOR"*"$PASS_COLOR"~$DEFAULT_COLOR"
 
-export CLI_COLOR=1
-LSCOLORS=$LSCOLORS:"di=$DI_COLOR::ex=$EX_COLOR::ln=$LN_COLOR:" ; export LSCOLORS
+LS_COLORS=$LS_COLORS:"di=$DI_COLOR::ex=$EX_COLOR::ln=$LN_COLOR:" ; export LS_COLORS
 
 parse_git_branch() {
      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/user/local/bin/bash
 
 MONTH="$(cut -d' ' -f2 <<< "$(date)")"
 
