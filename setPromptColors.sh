@@ -1,7 +1,26 @@
-#!/user/local/bin/bash
+#!/bin/bash
+
+# Detecting OS type [https://stackoverflow.com/questions/394230/how-to-detect-the-os-from-a-bash-script]
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # To get this ^ to work...
+  # 1. Install Homebrew [https://brew.sh/]
+  # 2. Install updated bash [https://itnext.io/upgrading-bash-on-macos-7138bd1066ba]
+
+  # To use GNU bash commands
+  # 1. run `brew install coreutils` [https://stackoverflow.com/questions/57972341/how-to-install-and-use-gnu-ls-on-macos]
+  # 2. The following two directories should now exist and be available to source
+  export PATH="/usr/local/opt/coreutils/libexec/gnubin:${PATH}"
+  export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:${MANPATH}"
+
+  HOME_PATH="\/Users\/"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  HOME_PATH="\/home\/"
+fi
 
 export TERM=xterm-256color
-function EXT_COLOR () { echo -ne "\e[$1;38;5;$2m"; }     # REQUIRED FOR GETTING 256 COLORS IN PS1 PROMPT!!! KEEP!!!!
+
+# REQUIRED FOR GETTING 256 COLORS IN PS1 PROMPT #
+function EXT_COLOR () { echo -ne "\e[$1;38;5;$2m"; }
 
 MONTH="$(cut -d' ' -f2 <<< "$(date)")"
 
@@ -51,8 +70,7 @@ DEFAULT_COLOR="\e[0m"
 
 echo -e $PASS_COLOR"~"$ERROR_COLOR"*"$MAIN_COLOR$MESSAGE_1 $ACCENT_COLOR$MESSAGE_2$ERROR_COLOR"*"$PASS_COLOR"~$DEFAULT_COLOR"
 
-export CLI_COLOR=1
-LSCOLORS=$LSCOLORS:"di=$DI_COLOR::ex=$EX_COLOR::ln=$LN_COLOR:" ; export LSCOLORS
+LS_COLORS=$LS_COLORS:"di=$DI_COLOR::ex=$EX_COLOR::ln=$LN_COLOR:" ; export LS_COLORS
 
 parse_git_branch() {
      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
@@ -67,7 +85,7 @@ DOMAIN_NAME_TERM() {
   echo -e "$MAIN_COLOR$USER$ACCENT_COLOR@$(hostname)$DEFAULT_COLOR"
 }
 short_pwd() {
-  echo $(pwd) | sed "s/\/Users\/$USER\//~\//"
+  echo $(pwd) | sed "s/$HOME_PATH$USER\//~\//"
 }
 WORKING_DIR_TERM() {
   echo -e "$MAIN_COLOR$(short_pwd)$DEFAULT_COLOR"
