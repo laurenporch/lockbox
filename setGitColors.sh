@@ -13,10 +13,10 @@ elif [ "$MONTH" == "Nov" ]; then
     UNTRACKED=130
     UNMERGED=196
 elif [ "$MONTH" == "Dec" ]; then
-    ADDED=46
+    ADDED=28
     CHANGED=196
-    UNTRACKED=220
-    UNMERGED=250
+    UNTRACKED=214
+    UNMERGED=153
 else # Default colors
     ADDED=231
     CHANGED=232

@@ -47,13 +47,13 @@ elif [ "$MONTH" == "Nov" ]; then
 elif [ "$MONTH" == "Dec" ]; then
     MESSAGE_1="MERRY"
     MESSAGE_2="CHRISTMAS!"
-    MAIN_COLOR=`EXT_COLOR 1 46`
-    DI_COLOR="1;38;5;46"
+    MAIN_COLOR=`EXT_COLOR 1 28`
+    DI_COLOR="1;38;5;28"
     ACCENT_COLOR=`EXT_COLOR 1 196`
     EX_COLOR="1;38;5;196"
-    PASS_COLOR=`EXT_COLOR 1 220`
-    LN_COLOR="1;38;5;220"
-    ERROR_COLOR=`EXT_COLOR 1 250`
+    PASS_COLOR=`EXT_COLOR 1 214`
+    LN_COLOR="1;38;5;214"
+    ERROR_COLOR=`EXT_COLOR 1 153`
 else # Default colors
     MESSAGE_1="Clean"
     MESSAGE_2="Slate"
