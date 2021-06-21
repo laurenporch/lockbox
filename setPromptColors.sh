@@ -168,7 +168,11 @@ parse_git_branch() {
      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 get_gcc_version() {
-   gcc --version | grep ^gcc | sed 's/^.* //g' | sed 's/-.*//g'
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        gcc -dumpversion
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        gcc -dumpfullversion
+    fi
 }
 GCC_TERM() {
   GCC="GCC"
