@@ -196,4 +196,16 @@ WORKING_DIR_TERM() {
 GIT_BRANCH_TERM() {
   echo -e "$ACCENT_COLOR$(parse_git_branch)$DEFAULT_COLOR"
 }
+TOP_CORNER() {
+  echo -e "$PASS_COLOR\xE2\x94\x8C$DEFAULT_COLOR"
+}
+JOINT() {
+  echo -e "$PASS_COLOR\xE2\x94\x80$DEFAULT_COLOR"
+}
+BOTTOM_CORNER() {
+  echo -e "$PASS_COLOR\xE2\x94\x94$DEFAULT_COLOR"
+}
+ARROW() {
+  echo -e "$PASS_COLOR\xE2\x96\xB6$DEFAULT_COLOR"
+}
 export PS1="$PASS_COLOR""┌─[\`if [ \$? = 0 ]; then echo \$(OK_TERM); else echo \$(ERROR_TERM); fi\`$PASS_COLOR]───[\$(DOMAIN_NAME_TERM)$PASS_COLOR]───[\$(WORKING_DIR_TERM)\$(GIT_BRANCH_TERM)$PASS_COLOR]───[\$(GCC_TERM)$PASS_COLOR]\n└───▶\[$DEFAULT_COLOR\] "
