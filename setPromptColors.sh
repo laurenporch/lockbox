@@ -43,13 +43,27 @@ parse_git_branch() {
      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 git_status_count() {
-    status=$(git status -s 2>/dev/null)
-    added=$(echo $status | grep "A " | wc -l)
-    deleted=$(echo $status | grep " D" | wc -l)
-    modified=$(echo $status | grep " M" | wc -l)
-    staged=$(echo $status | grep "M " | wc -l)
-    untracked=$(echo $status | grep "??" | wc -l)
+    short_status=$(git status -s 2>/dev/null)
+    long_status="$(git status 2> /dev/null)"
+    added=$(echo $short_status | grep "A " | wc -l)
+    deleted=$(echo $short_status | grep " D" | wc -l)
+    modified=$(echo $short_status | grep " M" | wc -l)
+    staged=$(echo $short_status | grep "M " | wc -l)
+    untracked=$(echo $short_status | grep "??" | wc -l)
+    is_ahead=$(echo -n "$long_status" | grep "ahead")
+    is_behind=$(echo -n "$long_status" | grep "behind")
     STATS=''
+
+
+    if [ ! -z "$is_ahead" ]; then
+        local DIST_VAL=$(echo "$is_ahead" | sed 's/[^0-9]*//g')
+        STATS="${DIST_VAL}››"
+    fi
+
+    if [ ! -z "$is_behind" ]; then
+        local DIST_VAL=$(echo "$is_behind" | sed 's/[^0-9]*//g')
+        STATS="${STATS}‹‹${DIST_VAL}"
+    fi
 
     if [ $added != 0 ]; then
         STATS="$added+"
@@ -73,8 +87,9 @@ git_status_count() {
 
     echo "$STATS"
 }
-GIT_STATUS_COUNT() {
-    echo -e "$ERROR_COLOR$(git_status_count)$DEFAULT_COLOR"
+git_stats=`git_status_count`
+GIT_STATS() {
+    echo -e "$ERROR_COLOR${git_stats}$DEFAULT_COLOR"
 }
 
 get_gcc_version() {
@@ -95,7 +110,11 @@ ERROR_TERM() {
   echo -e "$ERROR_COLOR\xE2\x9C\x98$DEFAULT_COLOR"
 }
 DOMAIN_NAME_TERM() {
-  echo -e "$MAIN_COLOR$USER$DEFAULT_COLOR$ACCENT_COLOR@$DEFAULT_COLOR$ACCENT_COLOR$(hostname)$DEFAULT_COLOR"
+    if [ $NICKNAME ]; then
+        echo -e "$MAIN_COLOR$NICKNAME$DEFAULT_COLOR"
+    else
+      echo -e "$MAIN_COLOR$USER$DEFAULT_COLOR$ACCENT_COLOR@$DEFAULT_COLOR$ACCENT_COLOR$(hostname)$DEFAULT_COLOR"
+    fi
 }
 short_pwd() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -116,8 +135,9 @@ joint=$(echo -e "\xE2\x94\x80")
 top_corner=$(echo -e "\xE2\x94\x8C")
 bottom_corner=$(echo -e "\xE2\x94\x94")
 arrow=$(echo -e "\xE2\x96\xB6")
-TOP_CORNER=$PASS_COLOR$top_corner$joint$joint[$DEFAULT_COLOR
-INNER_JOINT=$PASS_COLOR]$joint$joint$joint[$DEFAULT_COLOR
-BOTTOM_CORNER=$PASS_COLOR$bottom_corner$joint$joint$arrow$DEFAULT_COLOR
+TOP_CORNER=$PASS_COLOR$top_corner$joint[$DEFAULT_COLOR
+INNER_JOINT=$PASS_COLOR]$joint$joint[$DEFAULT_COLOR
+BOTTOM_CORNER=$PASS_COLOR$bottom_corner$joint$arrow$DEFAULT_COLOR
+END_CAP="$PASS_COLOR]\n$DEFAULT_COLOR"
 
-export PS1="$TOP_CORNER\`if [ \$? = 0 ]; then echo \$(OK_TERM); else echo \$(ERROR_TERM); fi\`$INNER_JOINT\$(DOMAIN_NAME_TERM)$INNER_JOINT\$(WORKING_DIR_TERM)\$(GIT_BRANCH_TERM)]\n$BOTTOM_CORNER "
+export PS1="$TOP_CORNER\`if [ \$? = 0 ]; then echo \$(OK_TERM); else echo \$(ERROR_TERM); fi\`$INNER_JOINT\$(DOMAIN_NAME_TERM)$INNER_JOINT\$(WORKING_DIR_TERM)\$(GIT_BRANCH_TERM)$INNER_JOINT\$(GIT_STATS)$END_CAP$BOTTOM_CORNER "
