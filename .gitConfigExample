@@ -1,0 +1,16 @@
+[user]
+	name = 
+    email = 
+
+[color]
+	ui = true
+    status = always
+
+[color "status"]
+    added = 
+    changed = 
+    untracked = 
+    unmerged = 
+
+[push]
+    default = simple

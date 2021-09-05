@@ -54,15 +54,17 @@ git_status_count() {
     is_behind=$(echo -n "$long_status" | grep "behind")
     STATS=''
 
+    up_arrow=$(echo -e "\xE2\x86\x91")
+    down_arrow=$(echo -e "\xE2\x86\x93")
 
     if [ ! -z "$is_ahead" ]; then
         local DIST_VAL=$(echo "$is_ahead" | sed 's/[^0-9]*//g')
-        STATS="${DIST_VAL}››"
+        STATS="${DIST_VAL}$up_arrow"
     fi
 
     if [ ! -z "$is_behind" ]; then
         local DIST_VAL=$(echo "$is_behind" | sed 's/[^0-9]*//g')
-        STATS="${STATS}‹‹${DIST_VAL}"
+        STATS="${STATS}${DIST_VAL}$down_arrow"
     fi
 
     if [ $added != 0 ]; then
@@ -70,19 +72,19 @@ git_status_count() {
     fi
 
     if [ $deleted != 0 ]; then
-        STATS="$STATS $deleted-"
+        STATS="$STATS$deleted-"
     fi
 
     if [ $modified != 0 ]; then
-        STATS="$STATS $modified""m"
+        STATS="$STATS$modified""*"
     fi
 
     if [ $staged != 0 ]; then
-        STATS="$STATS $staged""s"
+        STATS="$STATS$staged""^"
     fi
 
     if [ $untracked != 0 ]; then
-        STATS="$STATS $untracked*"
+        STATS="$STATS${untracked}u"
     fi
 
     echo "$STATS"
