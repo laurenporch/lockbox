@@ -139,7 +139,7 @@ bottom_corner=$(echo -e "\xE2\x94\x94")
 arrow=$(echo -e "\xE2\x96\xB6")
 TOP_CORNER=$PASS_COLOR$top_corner$joint[$DEFAULT_COLOR
 INNER_JOINT=$PASS_COLOR]$joint$joint[$DEFAULT_COLOR
-BOTTOM_CORNER=$PASS_COLOR$bottom_corner$joint$arrow$DEFAULT_COLOR
-END_CAP="$PASS_COLOR]\n$DEFAULT_COLOR"
+BOTTOM_CORNER="\[\e[1;38;5;${COLOR3}m\]$bottom_corner$joint$arrow\[${DEFAULT_COLOR}\]"
+END_CAP="$PASS_COLOR]$DEFAULT_COLOR\n"
 
 export PS1="$TOP_CORNER\`if [ \$? = 0 ]; then echo \$(OK_TERM); else echo \$(ERROR_TERM); fi\`$INNER_JOINT\$(DOMAIN_NAME_TERM)$INNER_JOINT\$(WORKING_DIR_TERM)\$(GIT_BRANCH_TERM)$END_CAP$BOTTOM_CORNER "
