@@ -43,57 +43,86 @@ parse_git_branch() {
      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 git_status_count() {
-    short_status=$(git status -s 2>/dev/null)
-    long_status="$(git status 2> /dev/null)"
-    added=$(echo $short_status | grep "A " | wc -l)
-    deleted=$(echo $short_status | grep " D" | wc -l)
-    modified=$(echo $short_status | grep " M" | wc -l)
-    staged=$(echo $short_status | grep "M " | wc -l)
-    untracked=$(echo $short_status | grep "??" | wc -l)
-    is_ahead=$(echo -n "$long_status" | grep "ahead")
-    is_behind=$(echo -n "$long_status" | grep "behind")
-    STATS=''
+    if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]; then
+        BRANCH_NAME=$(prase_git_branch)
+        commit_diff="$(git rev-list --left-right --count ${BRANCH_NAME}...origin/${BRANCH_NAME})"
+        ahead="$(cut -d$' ' -f1 <<< $commit_diff)"
+        behind="$(cut -d$' ' -f2 <<< $commit_diff)"
+        
+        up_arrow=$(echo -e "\xE2\x86\x91")
+        down_arrow=$(echo -e "\xE2\x86\x93")
+        
+        STATS=""
+        space=""
 
-    up_arrow=$(echo -e "\xE2\x86\x91")
-    down_arrow=$(echo -e "\xE2\x86\x93")
+        if [ $ahead -gt 0 ]; then
+            STATS="${ahead}${up_arrow}"
+            space=" "
+        fi
 
-    if [ ! -z "$is_ahead" ]; then
-        local DIST_VAL=$(echo "$is_ahead" | sed 's/[^0-9]*//g')
-        STATS="${DIST_VAL}$up_arrow"
+        if [ $behind -gt 0 ]; then
+            STATS="${STATS}${space}${down_arrow}"
+        fi
+        
+        mc=0 dc=0 uc=0 ac=0 sc=0 rc=0 cc=0
+        local line status path name
+        IFS=''
+        while read -r line; do
+            [ "$line" ] || continue
+            status=${line:0:2}
+            path=${line:3}
+            case "$status" in
+                " M") ((mc++)) ;;
+                " D") ((dc++)) ;;
+                "D ") ((dc++)) ;;
+                "??") ((uc++)) ;;
+                "A ") ((ac++)) ;;
+                "M ") ((sc++)) ;;
+                "R ") ((rc++)) ;;
+                "MM")
+                    ((sc++))
+                    ((mc++)) ;;
+                "UU") ((cc++)) ;;
+                *) echo "unsupported status on line $line"
+
+        if [ $mc -gt 0 ]; then
+            STATS="${STATS}${space}${mc}*"
+            space=" "
+        fi
+
+        if [ $dc -tg 0 ]; then
+            STATS="${STATS}${space}${dc}-"
+            space=" "
+        fi
+
+        if [ $uc -gt 0 ]; then
+            STATS="${STATS}${space}${uc}?"
+            space=" "
+        fi
+
+        if [ $ac -gt 0 ]; then
+            STATS="${STATS}${space}${ac}+"
+            space=" "
+        fi
+
+        if [ $sc -gt 0 ]; then
+            STATS="${STATS}${space}${sc}^"
+            space=" "
+        fi
+        
+        if [ $rc -gt 0 ]; then
+            STATS="${STATS}${space}${rc}="
+            space=" "
+        fi
+        
+        if [ $cc -gt 0 ]; then
+            STATS="${STATS}${space}${cc}!"
+            space=" "
+        fi
+
+        echo "${space}${ERROR_COLOR}${STATS}${DEFAULT_COLOR}"
     fi
-
-    if [ ! -z "$is_behind" ]; then
-        local DIST_VAL=$(echo "$is_behind" | sed 's/[^0-9]*//g')
-        STATS="${STATS}${DIST_VAL}$down_arrow"
-    fi
-
-    if [ $added != 0 ]; then
-        STATS="$added+"
-    fi
-
-    if [ $deleted != 0 ]; then
-        STATS="$STATS$deleted-"
-    fi
-
-    if [ $modified != 0 ]; then
-        STATS="$STATS$modified""*"
-    fi
-
-    if [ $staged != 0 ]; then
-        STATS="$STATS$staged""^"
-    fi
-
-    if [ $untracked != 0 ]; then
-        STATS="$STATS${untracked}u"
-    fi
-
-    echo "$STATS"
 }
-git_stats=`git_status_count`
-GIT_STATS() {
-    echo -e "$ERROR_COLOR${git_stats}$DEFAULT_COLOR"
-}
-
 get_gcc_version() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
         gcc -dumpversion
