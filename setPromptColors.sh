@@ -35,7 +35,7 @@ ERROR_COLOR=`EXT_COLOR $COLOR4`
 
 DEFAULT_COLOR="\e[0m"
 
-echo -e $PASS_COLOR"~"$ERROR_COLOR"*"$MAIN_COLOR$MESSAGE_1 $ACCENT_COLOR$MESSAGE_2$ERROR_COLOR"*"$PASS_COLOR"~"$DEFAULT_COLOR
+echo -e ${PASS_COLOR}"~"${ERROR_COLOR}"*"${MAIN_COLOR}${MESSAGE_1} ${ACCENT_COLOR}${MESSAGE_2}${ERROR_COLOR}"*"${PASS_COLOR}"~"${DEFAULT_COLOR}
 
 LS_COLORS=$LS_COLORS:"di=$DI_COLOR::ex=$EX_COLOR::ln=$LN_COLOR:" ; export LS_COLORS
 
@@ -132,19 +132,19 @@ get_gcc_version() {
 }
 GCC_TERM() {
   GCC="GCC"
-  echo -e "$MAIN_COLOR$GCC $(get_gcc_version)$DEFAULT_COLOR"
+  echo -e "${MAIN_COLOR}${GCC} $(get_gcc_version)${DEFAULT_COLOR}"
 }
 OK_TERM() {
-  echo -e "$PASS_COLOR\xE2\x9C\x94$DEFAULT_COLOR"
+  echo -e "${PASS_COLOR}\xE2\x9C\x94${DEFAULT_COLOR}"
 }
 ERROR_TERM() {
-  echo -e "$ERROR_COLOR\xE2\x9C\x98$DEFAULT_COLOR"
+  echo -e "${ERROR_COLOR}\xE2\x9C\x98${DEFAULT_COLOR}"
 }
 DOMAIN_NAME_TERM() {
     if [ $NICKNAME ]; then
-        echo -e "$MAIN_COLOR$NICKNAME$DEFAULT_COLOR"
+        echo -e "${MAIN_COLOR}${NICKNAME}${DEFAULT_COLOR}"
     else
-      echo -e "$MAIN_COLOR$USER$DEFAULT_COLOR$ACCENT_COLOR@$DEFAULT_COLOR$ACCENT_COLOR$(hostname)$DEFAULT_COLOR"
+      echo -e "${MAIN_COLOR}${USER}${DEFAULT_COLOR}${ACCENT_COLOR}@${DEFAULT_COLOR}${ACCENT_COLOR}$(hostname)${DEFAULT_COLOR}"
     fi
 }
 short_pwd() {
@@ -155,10 +155,12 @@ short_pwd() {
     fi
 }
 WORKING_DIR_TERM() {
-  echo -e "$MAIN_COLOR$(short_pwd)$DEFAULT_COLOR"
+  echo -e "${MAIN_COLOR}$(short_pwd)${DEFAULT_COLOR}"
 }
 GIT_BRANCH_TERM() {
-  echo -e "$ACCENT_COLOR$(parse_git_branch)$DEFAULT_COLOR"
+    if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]; then
+        echo -e "${ACCENT_COLOR}$(parse_git_branch)${DEFAULT_COLOR}"
+    fi
 }
 
 # Symbols for PS1 prompt
@@ -166,9 +168,9 @@ joint=$(echo -e "\xE2\x94\x80")
 top_corner=$(echo -e "\xE2\x94\x8C")
 bottom_corner=$(echo -e "\xE2\x94\x94")
 arrow=$(echo -e "\xE2\x96\xB6")
-TOP_CORNER=$PASS_COLOR$top_corner$joint[$DEFAULT_COLOR
-INNER_JOINT=$PASS_COLOR]$joint$joint[$DEFAULT_COLOR
-BOTTOM_CORNER="\[\e[1;38;5;${COLOR3}m\]$bottom_corner$joint$arrow\[${DEFAULT_COLOR}\]"
-END_CAP="$PASS_COLOR]$DEFAULT_COLOR\n"
+TOP_CORNER=${PASS_COLOR}${top_corner}${joint}[${DEFAULT_COLOR}
+INNER_JOINT=${PASS_COLOR}]${joint}${joint}[${DEFAULT_COLOR}
+BOTTOM_CORNER="\[\e[1;38;5;${COLOR3}m\]${bottom_corner}${joint}${arrow}\[${DEFAULT_COLOR}\]"
+END_CAP="${PASS_COLOR}]${DEFAULT_COLOR}\n"
 
-export PS1="$TOP_CORNER\`if [ \$? = 0 ]; then echo \$(OK_TERM); else echo \$(ERROR_TERM); fi\`$INNER_JOINT\$(DOMAIN_NAME_TERM)$INNER_JOINT\$(WORKING_DIR_TERM)\$(GIT_BRANCH_TERM)$END_CAP$BOTTOM_CORNER "
+export PS1="${TOP_CORNER}\`if [ \$? = 0 ]; then echo \$(OK_TERM); else echo \$(ERROR_TERM); fi\`${INNER_JOINT}\$(DOMAIN_NAME_TERM)${INNER_JOINT}\$(WORKING_DIR_TERM)\$(GIT_BRANCH_TERM)${END_CAP}${BOTTOM_CORNER} "
