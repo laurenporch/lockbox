@@ -54,14 +54,16 @@ git_status_count() {
         
         STATS=""
         space=""
+        
+        if [ "$commit_diff" != "" ]; then
+            if [ $ahead -gt 0 ]; then
+                STATS="${ahead}${up_arrow}"
+                space=" "
+            fi
 
-        if [ $ahead -gt 0 ]; then
-            STATS="${ahead}${up_arrow}"
-            space=" "
-        fi
-
-        if [ $behind -gt 0 ]; then
-            STATS="${STATS}${space}${down_arrow}"
+            if [ $behind -gt 0 ]; then
+                STATS="${STATS}${space}${down_arrow}"
+            fi
         fi
         
         mc=0 dc=0 uc=0 ac=0 sc=0 rc=0 cc=0
