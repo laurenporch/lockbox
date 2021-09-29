@@ -1,5 +1,7 @@
 # lockbox
 Add the following to your .bashrc or .bash_profile (depending on which one you have):
-`source [path_to_file]/colors.sh`
-`source [path_to_file]/setGitColors.sh`
-`source [path_to_file]/setPromptColors.sh`
+```
+source [path_to_file]/colors.sh
+source [path_to_file]/setGitColors.sh
+source [path_to_file]/setPromptColors.sh
+```
