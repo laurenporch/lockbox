@@ -78,8 +78,8 @@ elif [ "$MONTH" == "Oct" ]; then
     MESSAGE_2="~ OoKy"
     COLOR1=28
     COLOR2=202
-    COLOR3=128
-    COLOR4=252
+    COLOR3=135
+    COLOR4=250
 elif [ "$MONTH" == "Nov" ]; then
     MESSAGE_1="Turkey"
     MESSAGE_2="Time"
