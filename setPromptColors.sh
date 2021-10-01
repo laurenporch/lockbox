@@ -40,14 +40,20 @@ echo -e ${PASS_COLOR}"~"${ERROR_COLOR}"*"${MAIN_COLOR}${MESSAGE_1} ${ACCENT_COLO
 LS_COLORS=$LS_COLORS:"di=$DI_COLOR::ex=$EX_COLOR::ln=$LN_COLOR:" ; export LS_COLORS
 
 parse_git_branch() {
-     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
 }
 git_status_count() {
     if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]; then
-        BRANCH_NAME=$(prase_git_branch)
+        BRANCH_NAME="$(parse_git_branch)"
         commit_diff="$(git rev-list --left-right --count ${BRANCH_NAME}...origin/${BRANCH_NAME})"
-        ahead="$(cut -d$' ' -f1 <<< $commit_diff)"
-        behind="$(cut -d$' ' -f2 <<< $commit_diff)"
+        
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            ahead="$(cut -d$'\t' -f1 <<< $commit_diff)"
+            behind="$(cut -d$'\t' -f2 <<< $commit_diff)"
+        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            ahead="$(cut -d$' ' -f1 <<< $commit_diff)"
+            behind="$(cut -d$' ' -f2 <<< $commit_diff)"
+        fi
         
         up_arrow=$(echo -e "\xE2\x86\x91")
         down_arrow=$(echo -e "\xE2\x86\x93")
@@ -86,13 +92,15 @@ git_status_count() {
                     ((mc++)) ;;
                 "UU") ((cc++)) ;;
                 *) echo "unsupported status on line $line"
+            esac
+        done <<< "$(git status -s)"
 
         if [ $mc -gt 0 ]; then
             STATS="${STATS}${space}${mc}*"
             space=" "
         fi
 
-        if [ $dc -tg 0 ]; then
+        if [ $dc -gt 0 ]; then
             STATS="${STATS}${space}${dc}-"
             space=" "
         fi
@@ -161,7 +169,7 @@ WORKING_DIR_TERM() {
 }
 GIT_BRANCH_TERM() {
     if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]; then
-        echo -e "${ACCENT_COLOR}$(parse_git_branch)${DEFAULT_COLOR}"
+        echo -e "${ACCENT_COLOR} ($(parse_git_branch))${DEFAULT_COLOR}$(git_status_count)"
     fi
 }
 
